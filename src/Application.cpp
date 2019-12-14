@@ -1,6 +1,9 @@
 #include "Application.h"
-#include <stdlib.h> 
-#include <iostream>
+
+void Application::glfwErrorCallback(int error, const char* description)
+{
+	std::cerr << "Glfw Error " << error << ": " << description << std::endl;
+}
 
 Application::Application()
 {
@@ -24,14 +27,40 @@ Application::Application()
 	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		std::cerr << "Failed to load GL functions" << std::endl;
 	glfwSetErrorCallback(glfwErrorCallback);
+
+	ui = new UI(window);
 }
 
 Application::~Application()
 {
+	delete ui;
+	glfwDestroyWindow(window);
 	glfwTerminate();
 }
 
-void Application::glfwErrorCallback(int error, const char* description)
+void Application::executeLoop()
 {
-	std::cerr << "Glfw Error " << error << ": " << description << std::endl;
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		
+		ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		ImGui::Text("Hello from another window!");
+		ImGui::End();
+
+		ImGui::Render();
+
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+		glClearColor(0.5f, 0.0f, 0.5f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		glfwSwapBuffers(window);
+	}
 }
