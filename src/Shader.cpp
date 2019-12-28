@@ -48,6 +48,7 @@ std::string Shader::getStringFromFile(const std::string& path)
 	catch (std::ifstream::failure e)
 	{
 		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
+		exit(1);
 	}
 }
 
